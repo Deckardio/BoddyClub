@@ -24,6 +24,8 @@ def show_precent(number: int):
 
 
 def parse_all_data(filename: str, count=None):
+    if os.path.isdir("Results") is False:
+        os.mkdir("Results")
     RES_PATH = "Results/res_flow_1.csv"
     print("start")
     counter = 0
@@ -355,24 +357,34 @@ def  corel(source_filename: str, dest_filename: str):
 
 
 @click.command()
-@click.option('-l', "--log_file", "log_filename",  default=None, type=click.Path(exists=True), help='path to radius log file')
-@click.option('-c', "--clear_log_file", "clear_log_filename", default=None, type=click.Path(exists=True), help='path to preprocessing log file')
+@click.option('-l', "--log_file", "log_filename",  default=None, type=click.Path(exists=True, file_okay=True, dir_okay=False), help='path to radius log file')
+@click.option('-c', "--clear_log_file", "clear_log_filename", default=None, type=click.Path(exists=True, file_okay=True, dir_okay=False), help='path to preprocessing log file')
 def main(log_filename: str, clear_log_filename: str):
     if clear_log_filename is None and log_filename is None:
-        return
+        return None
     if os.path.isdir("Results") is False:
         os.mkdir("Results")
-    digit_dest_filename = "Results/digit_res.csv"
-    dict_digit_filename = "Results/digit_dict.csv"
-    dest_filename = "Results/res.csv"
+    
+    filename = None
+    if clear_log_filename is not None:
+        filename = os.path.basename(clear_log_filename)
+    elif log_filename is not None:
+        filename = os.path.basename(log_filename)
+    else:
+        return None
+
+    digit_dest_filename = "Results/digit_preproc_{0}.csv".format(filename)
+    dict_digit_filename = "Results/digit_preproc_{0}_dict.csv".format(filename)
+    dest_filename = "Results/preproc_{0}.csv".format(filename)
     if clear_log_filename is None and log_filename is not None:
         get_all_flows(log_filename, dest_filename)
         print("log was readed successfully!")
+        print("Preprocessing log was saved in file: {0}".format(dest_filename))
     elif clear_log_filename is not None:
         dest_filename = clear_log_filename
     print("Converting logins")
     digit.start(dest_filename, digit_dest_filename, dict_digit_filename)
-    print("log was convert successfully!")
+    print("log was converted successfully!")
 
     while True:
         print("select action:")
@@ -397,7 +409,6 @@ def main(log_filename: str, clear_log_filename: str):
         elif command == "exit":
             print("good bye")
             break
-
 
 
 if __name__ == "__main__":

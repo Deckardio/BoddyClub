@@ -1,4 +1,5 @@
 import sys
+import os
 import time
 import datetime
 
@@ -7,7 +8,7 @@ import support_func as sup
 
 
 MAX_SESSION_INTERVAL = 100
-
+MAX_ROW_PER_LOG = 3000000
 
 class State:
     Alive = "Alive"
@@ -149,6 +150,7 @@ def flows_cleaner(flows: dict, last_time: int):
     for elem in removed_key:
         del flows[elem]
 
+
 def check_small_session(data, flows: dict):
     # print([data.state, data.direction])
     if data.state == State.Start and data.direction == Direction.Base:
@@ -171,6 +173,7 @@ def check_small_session(data, flows: dict):
                             
     return None
 
+
 error_desc = {
     "0": "Skiped due to traffic limit",
     "1011": "Password match failure",
@@ -184,16 +187,32 @@ error_desc = {
     "-46": "FAILED Session in work",
     "-38": "FAILED Doubling session in TB_WTMPS"
 }
+
+
+def get_new_filename():
+    file_template = "radius.log.{0}"
+    return file_template.format(int(time.time()))
+
+
 if __name__ == "__main__":
+    if os.path.isdir("logs") is False:
+        os.mkdir("logs")
     flows = {}
     i = 0
     line = ''
     sys.stdin.reconfigure(encoding='ISO-8859-1')
+    file_number = 0
+    ww = open('logs/' + get_new_filename(), 'w', encoding='ISO-8859-1')
     while True:
         line = sys.stdin.readline()
         if line != '' and line != '\n':
             i += 1
             data = check_line(line)
+            ww.write(line)
+            if i > MAX_ROW_PER_LOG:
+                ww.close()
+                ww = open('logs/' + get_new_filename(), 'w', encoding='ISO-8859-1')
+                i = 0
             line = ''
 
             if isinstance(data, Error):
@@ -206,7 +225,7 @@ if __name__ == "__main__":
                 is_small = check_small_session(data, flows)
                 if is_small is not None:
                     print("{3}: Обнаружена короткая сессия у пользователя({2} секунд): {0} - {1}".format(data.login, data.ULSK,  is_small, data.date))
-                if i == 100:
+                if i % 100 == 0:
                     flows_cleaner(flows, data.date)
-                    i = 0
- 
+                    # i = 0
+    ww.close()
