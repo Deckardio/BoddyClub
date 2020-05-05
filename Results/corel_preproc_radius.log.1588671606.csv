@@ -1,7 +1,7 @@
 ,begin,end,time interval,start count,alive count,stop count,incoming,outcoming,error_count,code 0,code 1011,code 1100,code -3,code -52,code -42,code -21,code -40,code -44,code -46,code -38
-begin,1.0,0.9996998716900238,0.2659575867110232,,,,,,,,,,,,,,,,,
-end,0.9996998716900238,1.0,0.2894937493047323,,,,,,,,,,,,,,,,,
-time interval,0.2659575867110232,0.2894937493047323,1.0,,,,,,,,,,,,,,,,,
+begin,1.0,1.0,,,,,,,,,,,,,,,,,,
+end,1.0,1.0,,,,,,,,,,,,,,,,,,
+time interval,,,,,,,,,,,,,,,,,,,,
 start count,,,,,,,,,,,,,,,,,,,,
 alive count,,,,,,,,,,,,,,,,,,,,
 stop count,,,,,,,,,,,,,,,,,,,,

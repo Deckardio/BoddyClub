@@ -395,7 +395,7 @@ def main(log_filename: str, clear_log_filename: str):
         command = input(">> ")
         if command == "1":
             print("creating correlation file...")
-            corel_filename = "Results/corel.csv"
+            corel_filename = "Results/corel_{0}".format(os.path.basename(dest_filename))
             corel(dest_filename, corel_filename)
             print("correlation wa saved in '{0}'".format(corel_filename))
         elif command == "2":
